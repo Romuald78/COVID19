@@ -130,12 +130,10 @@ function hashCode (s) {
 			return COLORS[index % COLORS.length];
 		},
 
-		transparentize: function(color, opacity) {
-			var alpha = opacity === undefined ? 0.5 : 1 - opacity;
-			return Color(color).alpha(alpha).rgbString();
-		}
+		
 	};
 
+    
 	// DEPRECATED
 	window.randomScalingFactor = function() {
 		return Math.round(Samples.utils.rand(-100, 100));
@@ -158,3 +156,5 @@ function hashCode (s) {
 	/* eslint-enable */
 
 }(this));
+
+

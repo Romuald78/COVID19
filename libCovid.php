@@ -6,10 +6,13 @@
 define("FILE_PREFIX"   , "covid19_data_");
 define("FILE_SUFFIX"   , ".json"        );
 define("DATA_DIRECTORY", "covid19"      );
+define("STAT_DIRECTORY", "stats"        );
 define("WORLD"         , "(_world_)"    );
+define("RANK"          , "(_rank_)"     );
 define("CASES"         , 0              );
 define("DEATHS"        , 1              );
 define("RATIO"         , 2              );
+define("MAXCASES"      , "maxCases"     );
 
 
 
@@ -123,11 +126,15 @@ function getMostRecentDataFile(){
     return $recentFileName;
 }
 
-function checkUpdateDataFile(){
+function getCurrentTime(){
     // Get current date (formatted)
     $today = date("Ymd_H");
+    return $today;
+}
+
+function checkUpdateDataFile(){
     // Get filename
-    $fileName = FILE_PREFIX . $today . FILE_SUFFIX;
+    $fileName = FILE_PREFIX . getCurrentTime() . FILE_SUFFIX;
     // Get full file path
     $filePath = './' . DATA_DIRECTORY . '/' . $fileName;
     // Get most recent data file
@@ -168,11 +175,26 @@ function getWholeData(){
     }
     
     // invert all dates from oldest to newest
-    foreach($out as $k=>$v){
-        $out[$k] = array_reverse($out[$k]);
+    $rank = [];
+    foreach($out as $country=>$v){
+        // Store ranking except for world
+        if($country != WORLD){   
+            $maxCases  = array_values($out[$country])[0][CASES];
+            $rank[$country] = $maxCases;
+        }
+        // reverse data to have oldest date first and recent dates at the ned of the curve
+        $out[$country] = array_reverse($out[$country]);
     }
-    
+    // Sort countries by alphabetical order
     ksort($out);
+    // sort ranking by number of cases (greatest first)
+    arsort($rank);
+    // Add ranking in out array
+    $i = 1;
+    foreach($rank as $country=>$v){
+        $out[$country][RANK] = $i;
+        $i++;
+    }
     
     // Return whole data
     return $out;    
@@ -192,6 +214,56 @@ function getCountryData($data, $country){
 }
 
 
+function updateNbConnections($flag){
+    // Get today
+    $today = getCurrentTime();
+    // Get filename
+    $fileName = "stats.json";
+    $filePath = './' . STAT_DIRECTORY . '/' . $fileName;
+    // Open json file
+    $json = "";
+
+    // If the file exists, we open it and LOCK it
+    if(file_exists($filePath) ){
+        $fp = fopen($filePath, "r+");
+        if( flock($fp, LOCK_EX) ){
+
+            // READ all FILE
+            $json = fread($fp, 1024*64);
+            // decode to json
+            $cnx = json_decode($json,True);
+            // Create entry if not existing
+            if( !isset($cnx[$today]) ){
+                $cnx[$today] = 0;
+            }
+            // If we need to increase
+            if($flag){
+                // Increase entry
+                $cnx[$today] += 1;
+                // Store json
+                $json = json_encode($cnx);
+                // Set write pointer to the beginning
+                fseek($fp, 0);
+                // Write all data inside and flush
+                fwrite($fp, $json);
+                fflush($fp);
+            }
+            else{
+                $json = json_encode($cnx);
+            }
+            // Remove lock
+            flock($fp, LOCK_UN);
+            // Close file
+            fclose($fp);        
+        }
+    }
+    
+    
+    // return the updated connections
+    return $json;
+}
+
+
 /*
 
 // check if the most recent local file matches the current day
@@ -200,9 +272,8 @@ function getCountryData($data, $country){
 checkUpdateDataFile();
 
 $DATA = getWholeData();
-$world = getCountryData($DATA,"France");
-print_r($world);
+print_r($DATA);
 
-*/
+//*/
 
 ?>
