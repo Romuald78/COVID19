@@ -217,6 +217,10 @@ function getCountryData($data, $country){
 function updateNbConnections($flag){
     // Get today
     $today = getCurrentTime();
+    $hour  = substr($today,-2);
+    if($hour=="00"){
+        $hour = "24";
+    }
     // Get filename
     $fileName = "stats.json";
     $filePath = './' . STAT_DIRECTORY . '/' . $fileName;
@@ -232,14 +236,16 @@ function updateNbConnections($flag){
             $json = fread($fp, 1024*64);
             // decode to json
             $cnx = json_decode($json,True);
+            
             // Create entry if not existing
-            if( !isset($cnx[$today]) ){
-                $cnx[$today] = 0;
+            if( !isset($cnx[$hour]) ){
+                $cnx[$hour] = 0;
             }
+            
             // If we need to increase
             if($flag){
                 // Increase entry
-                $cnx[$today] += 1;
+                $cnx[$hour] += 1;
                 // Store json
                 $json = json_encode($cnx);
                 // Set write pointer to the beginning
@@ -257,8 +263,7 @@ function updateNbConnections($flag){
             fclose($fp);        
         }
     }
-    
-    
+        
     // return the updated connections
     return $json;
 }

@@ -116,7 +116,7 @@ $DATA = json_encode($RAW);
             // Store this string into a cookie
             
             var date = new Date();
-            date.setTime(date.getTime()+(60*60*24*365));
+            date.setTime(date.getTime()+(1000*60*60*24*365));
             var expiry = date.toUTCString();
             document.cookie = "covid19Prefs="+ jsonTxt +"; expires="+ expiry + "; path=/";
         }
@@ -397,12 +397,17 @@ $DATA = json_encode($RAW);
 				data: [],
 				fill: false,
                 yAxisID: 'y-axis-'+axisID
-			};   
-            Object.keys(STATS).forEach( (k) => {
+			};
+            Object.keys(STATS).sort().forEach( (k) => {
                 var nb = STATS[k];
-                var dt = ((k.slice(-2) * 1) -1) * 3600*1000;
+                var dt = k * 1;
+                if (dt == 0){
+                    dt += 24;
+                }
+                dt -= 1;
+                dt *= 3600*1000;
                 newDataset.data.push({x:dt, y:nb});
-                console.log(dt + " " + nb);
+                console.log(dt/(3600*1000) + " " + nb);
             });
             config9.data.datasets.push(newDataset);
             window.myLine9.update();
