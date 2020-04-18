@@ -46,28 +46,35 @@ $DATA = json_encode($RAW);
 </head>
 
 <body>
-	<div class="allCanvas" >
-        <div id="canvas1" class="canvas1" >
-            <canvas id="canvasCases" ></canvas>
-        </div>        
-        <div id="canvas3" class="canvas3" >
-            <canvas id="canvasPerc" ></canvas>
-        </div>
-        <div id="canvas2" class="canvas2A" >
-            <canvas id="canvasWorldA" ></canvas>
-        </div>
-        <div id="canvas2" class="canvas2B" >
-            <canvas id="canvasWorldB" ></canvas>
-        </div>
-
-        
+	
+    <div id="canvas1" class="canvas1" >
+        <canvas id="canvasCases" ></canvas>
+    </div>        
+    <div id="canvas3" class="canvas3" >
+        <canvas id="canvasPerc" ></canvas>
     </div>
+
+    
+    <div id="canvas2A" class="canvas2A" >
+        <canvas id="canvasWorldA" ></canvas>
+    </div>
+    <div id="canvas2B" class="canvas2B" >
+        <canvas id="canvasWorldB" ></canvas>
+    </div>
+
+
+    <div id="canvas9" class="canvas9" >
+        <canvas id="canvasStats" ></canvas>
+    </div>        
+
     
     <div class="list1">
-        <input class="butt1" type="button" value="SAVE PREFERENCES" style="width=20%" onClick="saveCountries()">
-        <input class="butt1" type="button" value="CLEAR" style="width=20%" onClick="clearAllCharts()">
+        <img class="butts" src="./images/save.png"  width="48%" onClick="saveCountries()"  />
+        <img class="butts" src="./images/clear.png" width="48%" onClick="clearAllCharts()" />
+
+
         <form autocomplete="off">
-            <select name="countries" id="countrySelect"  onclick="changeCountry()" onkeypress="pressedKey(event)" size="30" >
+            <select class="scroller" name="countries" id="countrySelect"  onclick="changeCountry()" onkeypress="pressedKey(event)" size="33" style="max-width:100%;max-height:100%" >
             <?php            
             foreach($RAW as $k=>$v){
                 $selected = "";
@@ -79,11 +86,6 @@ $DATA = json_encode($RAW);
             ?>    
             </select>
         </form>
-
-        <div id="canvas9" class="canvas9" >
-            <canvas id="canvasStats" ></canvas>
-        </div>        
-
     </div>
     
     
@@ -208,6 +210,10 @@ $DATA = json_encode($RAW);
         var config3 = JSON.parse(JSON.stringify(config1));
         config3.options.title.text = 'COVID-19 : percentage of death'
 
+        config1.options.maintainAspectRatio = false;
+        config3.options.maintainAspectRatio = false;
+        
+        
         var config9 = JSON.parse(JSON.stringify(config1));
         config9.options.title.text = 'Connection stats'
         config9.labels = [];
@@ -242,6 +248,9 @@ $DATA = json_encode($RAW);
                     }]
             }
         };
+        // Set config 1 to logarithmic Y
+//        config1.options.scales.yAxes[0].type='logarithmic';
+
         
         
         
@@ -373,7 +382,7 @@ $DATA = json_encode($RAW);
             Object.keys(DATA).forEach( (country) => {
                 if(country != WORLD){                   
                     var rank = DATA[country][RANK];
-                    if(rank < 10){
+                    if(rank < 9){
                         var size    = Object.keys(DATA[country]).length-2;
                         var dt      = Object.keys(DATA[country])[size];
                         var nbCases = DATA[country][dt][0];

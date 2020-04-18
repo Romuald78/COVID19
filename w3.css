@@ -239,73 +239,106 @@ hr{border:0;border-top:1px solid #eee;margin:20px 0}
 .w3-border-pale-red,.w3-hover-border-pale-red:hover{border-color:#ffe7e7!important}.w3-border-pale-green,.w3-hover-border-pale-green:hover{border-color:#e7ffe7!important}
 .w3-border-pale-yellow,.w3-hover-border-pale-yellow:hover{border-color:#ffffcc!important}.w3-border-pale-blue,.w3-hover-border-pale-blue:hover{border-color:#e7ffff!important}
 
-div.allCanvas {
-  position: absolute;
-  left: 1%;
-  top: 1%;
-  width:88%;  // 73
-  border: 0px solid #ADADBD;    
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-gap: 1%;
-}
 
 div.list1 {
   position: absolute;
   top: 1%;
-  right:2%;
-  width:10%;
-  height:35%;
+  right:1%;
+  width:9%;
+  height:72%;
   border: 0px solid #ADADBD;
+  border-radius: 10px;
+  box-shadow:3px 3px 10px black;
   vertical-align: top;
   text-align: right;
 }
 
 
-
-
 div.canvas1 {
-  position: relative;
+  position: absolute;
   left: 1%;
-  top: 1%;
-  width:98%;  // 73
+  top:1%;
+  height:48.5%;
+  width:43.5%; 
   border: 0px solid #ADADBD;
+  border-radius: 10px;
+  box-shadow:3px 3px 10px black;
 }
 
 div.canvas3 {
-  position: relative;
-  right: 1%;
-  top: 1%;
-  width:98%;
+  position: absolute;
+  left: 45.5%;
+  top:1%;
+  height:48.5%;
+  width:43.5%; 
   border: 0px solid #ADADBD;
+  border-radius: 10px;
+  box-shadow:3px 3px 10px black;
 }
 
 div.canvas2A {
-  position: relative;
+  position: absolute;
   left: 1%;
-  bottom: 1%;
-  width:98%;  // 73
+  bottom:1%;
+  height:48.5%;
+  width:43.5%; 
   border: 0px solid #ADADBD;
+  border-radius: 10px;
+  box-shadow:3px 3px 10px black;
 }
+
 div.canvas2B {
-  position: relative;
-  right: 1%;
-  bottom: 1%;
-  width:98%;  // 73
+  position: absolute;
+  left: 45.5%;
+  bottom:1%;
+  height:48.5%;
+  width:43.5%; 
   border: 0px solid #ADADBD;
+  border-radius: 10px;
+  box-shadow:3px 3px 10px black;
 }
+
+
 div.canvas9 {
-  position: relative;
-  top: 1%;
+  position: absolute;
+  bottom: 1%;
   right: 1%;
-  height:100%;
-  width:100%;
+  height:25%;
+  width:9%;
+  vertical-align: bottom;
+  text-align: right;
   border: 0px solid #ADADBD;
+  border-radius: 10px;
+  box-shadow:3px 3px 10px black;
 }
 
 
 
-input.butt1 {
-    font-size: 10px;
-    border-radius: 10px;
+.butts {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+  padding-right: 7%;
+  padding-left: 7%;
+  opacity: 0.5;
 }
+
+.butts:hover  {
+  padding-right: 5%;
+  padding-left: 5%;
+  opacity: 1.0;
+  transition: 0.25s;  
+}
+
+.scroller {
+  overflow-y: scroll;
+  scrollbar-color: white white;
+  scrollbar-width: thin;
+}
+
+.scroller:hover{
+  scrollbar-color: black #f0f0f0;
+  transition: 0.25s;  
+}
+
