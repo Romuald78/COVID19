@@ -50,19 +50,27 @@ $DATA = json_encode($RAW);
     <div id="canvas1" class="canvas1" >
         <canvas id="canvasCases" ></canvas>
     </div>        
+    
     <div id="canvas3" class="canvas3" >
         <canvas id="canvasPerc" ></canvas>
     </div>
 
     
+    
     <div id="canvas2A" class="canvas2A" >
         <canvas id="canvasWorldA" ></canvas>
     </div>
+    
     <div id="canvas2B" class="canvas2B" >
         <canvas id="canvasWorldB" ></canvas>
     </div>
+    
+    <div id="canvas2C" class="canvas2C" >
+        <canvas id="canvasWorldC" ></canvas>
+    </div>
 
 
+    
     <div id="canvas9" class="canvas9" >
         <canvas id="canvasStats" ></canvas>
     </div>        
@@ -207,35 +215,46 @@ $DATA = json_encode($RAW);
 				}
 			}
 		};
+
+        config1.options.maintainAspectRatio = false;
+
         var config3 = JSON.parse(JSON.stringify(config1));
         config3.options.title.text = 'COVID-19 : percentage of death'
 
-        config1.options.maintainAspectRatio = false;
-        config3.options.maintainAspectRatio = false;
         
         
         var config9 = JSON.parse(JSON.stringify(config1));
         config9.options.title.text = 'Connection stats'
         config9.labels = [];
-//        config9.options.scales.xAxes[0].ticks.stepSize = 1;
         config9.options.scales.xAxes[0].type = 'time';
         config9.options.scales.xAxes[0].time = {unit:'hour'};
         config9.options.scales.xAxes[0].scaleLabel.labelString = 'Hours';
         config9.options.maintainAspectRatio = false;
         config9.options.responsive = true;
         
-        var config2A = {
-            type:'radar',
-            data:{
-                labels:[],
-                datasets:[{
-                        backgroundColor: transparentize(window.chartColors.red,0.75),
-                        borderColor: transparentize(window.chartColors.red,0.3),
-                        data: [],
-                        label: 'Nb Deaths'
-                    }]
-            }
-        };
+        var config2A = JSON.parse(JSON.stringify(config1));
+        config2A.options.title.text = 'COVID-19 : Delta of cases and deaths'
+        config1.options.maintainAspectRatio = false;
+        
+        config2A.options.scales.yAxes = [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: ''
+						},
+                        position: 'left',
+						id: 'y-axis-1'
+					},{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: ''
+						},
+                        position: 'right',
+						id: 'y-axis-2'
+					}];
+		
+        
         var config2B = {
             type:'radar',
             data:{
@@ -248,8 +267,25 @@ $DATA = json_encode($RAW);
                     }]
             }
         };
+
+        var config2C = {
+            type:'radar',
+            data:{
+                labels:[],
+                datasets:[{
+                        backgroundColor: transparentize(window.chartColors.red,0.75),
+                        borderColor: transparentize(window.chartColors.red,0.3),
+                        data: [],
+                        label: 'Nb Deaths'
+                    }]
+            }
+        };
+
+        
         // Set config 1 to logarithmic Y
-//        config1.options.scales.yAxes[0].type='logarithmic';
+        //config1.options.scales.yAxes[0].type='logarithmic';
+        // Set config 2A to logarithmic Y
+        //config2A.options.scales.yAxes[0].type='logarithmic';
 
         
         
@@ -268,6 +304,9 @@ $DATA = json_encode($RAW);
         // ADD a chart into the canvas
         function addLineChart(country ,color, chartNumber, labelled){
             axisID = 1;
+            if(chartNumber == 4){
+                axisID = 2;
+            }
             var newDataset = {
 				label: labelled,
 				backgroundColor: 'rgb(255, 255, 255)',
@@ -279,7 +318,8 @@ $DATA = json_encode($RAW);
             // Add Label + Value
             Object.keys(DATA[country]).forEach( (key) => {
                 if (key != RANK){
-                    newDataset.data.push( {x:key, y:DATA[country][key][chartNumber] });  
+                    var value = DATA[country][key][chartNumber];
+                    newDataset.data.push( {x:key, y:value });  
                 }
             });
             // Add DataSet
@@ -294,6 +334,12 @@ $DATA = json_encode($RAW);
                     console.log("add chart 3");
                     config3.data.datasets.push(newDataset);
                     window.myLine3.update();
+                    break;
+                case 3:
+                case 4:
+                    console.log("add chart 3");
+                    config2A.data.datasets.push(newDataset);
+                    window.myLine2A.update();
                     break;
             }
         }
@@ -329,10 +375,11 @@ $DATA = json_encode($RAW);
         // Generate all charts for a country
         function addCountryCharts(country) {
             // first check if wez have to remove data, else just add data
-            var remove1 = removeCountryCharts(country, config1.data.datasets);
-            var remove3 = removeCountryCharts(country, config3.data.datasets);
+            var remove1  = removeCountryCharts(country, config1.data.datasets);
+            var remove3  = removeCountryCharts(country, config3.data.datasets);
+            var remove2A = removeCountryCharts(country, config2A.data.datasets);
             
-            if( remove1 == false && remove3 == false ){
+            if( remove1 == false && remove3 == false && remove2A == false){
                 console.log("generating chart for "+country);
                 // Get hash code from country string
                 var hash = hashCode(country);
@@ -345,11 +392,15 @@ $DATA = json_encode($RAW);
                 addLineChart(country, color, 0, country);
                 addLineChart(country, color, 1, country);
                 addLineChart(country, color, 2, country);
+                addLineChart(country, color, 3, country);
+                addLineChart(country, color, 4, country);
+
             }
             else{
                 // updaye charts after removal
                 window.myLine1.update();
                 window.myLine3.update();
+                window.myLine2A.update();
             }
         };
 
@@ -385,20 +436,21 @@ $DATA = json_encode($RAW);
                     if(rank < 9){
                         var size    = Object.keys(DATA[country]).length-2;
                         var dt      = Object.keys(DATA[country])[size];
-                        var nbCases = DATA[country][dt][0];
+                        var nbCases = DATA[country][dt][0];                                 
                         var nbDeaths = DATA[country][dt][1];
-                        config2A.data.datasets[0].data.push( nbDeaths );
                         config2B.data.datasets[0].data.push( nbCases );
-                        config2A.data.labels.push( country );
+                        config2C.data.datasets[0].data.push( nbDeaths );
                         config2B.data.labels.push( country );
+                        config2C.data.labels.push( country );
                     }
                 }
             });    
-            window.myLine2A.update();
             window.myLine2B.update();    
+            window.myLine2C.update();    
         }
 
         function displayStats(){
+            var axisID = 1;
             var newDataset = {
 				label: "Connections/Hour",
 				backgroundColor: 'rgb(255, 255, 255)',
@@ -427,11 +479,13 @@ $DATA = json_encode($RAW);
             var ctx1  = document.getElementById('canvasCases').getContext('2d');
             var ctx2A = document.getElementById('canvasWorldA').getContext('2d');
             var ctx2B = document.getElementById('canvasWorldB').getContext('2d');
+            var ctx2C = document.getElementById('canvasWorldC').getContext('2d');
             var ctx3  = document.getElementById('canvasPerc').getContext('2d');
             var ctx9  = document.getElementById('canvasStats').getContext('2d');
             window.myLine1  = new Chart(ctx1 , config1 );
             window.myLine2A = new Chart(ctx2A, config2A);
             window.myLine2B = new Chart(ctx2B, config2B);
+            window.myLine2C = new Chart(ctx2C, config2C);
             window.myLine3  = new Chart(ctx3 , config3 );
             window.myLine9  = new Chart(ctx9 , config9 );
 

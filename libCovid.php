@@ -12,6 +12,8 @@ define("RANK"          , "(_rank_)"     );
 define("CASES"         , 0              );
 define("DEATHS"        , 1              );
 define("RATIO"         , 2              );
+define("DELTA_CASES"   , 3              );
+define("DELTA_DEATHS"  , 4              );
 define("MAXCASES"      , "maxCases"     );
 
 
@@ -42,9 +44,11 @@ function addEntryOut(&$tab, $time, $cases, $deaths){
     // Create entry of date and add details
     if(!isset($tab[$time])){
         $tab[$time] = [];
-        $tab[$time][CASES]  = $cases;
-        $tab[$time][DEATHS] = $deaths;
-        $tab[$time][RATIO]  = $ratio;
+        $tab[$time][CASES]        = $cases;
+        $tab[$time][DEATHS]       = $deaths;
+        $tab[$time][RATIO]        = $ratio;
+        $tab[$time][DELTA_CASES]  = 0;
+        $tab[$time][DELTA_DEATHS] = 0;
     }
     else{
         // display an error if date is already present
@@ -88,6 +92,39 @@ function reshapeData($data){
     processData($data, "PaysData", $out);    
     // Return the reshaped data
     return $out;
+}
+
+function computeDelta(&$out){
+
+    // For each country/world
+    foreach($out as $country => $data){
+        // Convert special characters for country variable
+        $country = removeAccents($country);
+        
+        // init previous data
+        $prevTime   = -1;
+        $prevCases  = -1;
+        $prevDeaths = -1;
+
+        // for each time
+        foreach($data as $time=>$v){
+            // get details
+            $cases   = $v[CASES];
+            $deaths  = $v[DEATHS];
+            
+            // Process if not the first loop
+            if( $prevTime != -1 ){                
+                // Update country/World deltas 
+                $out[$country][$prevTime][DELTA_CASES]  = $prevCases  - $cases;
+                $out[$country][$prevTime][DELTA_DEATHS] = $prevDeaths - $deaths;    
+            }
+            
+            // update previous values for next time
+            $prevTime   = $time;
+            $prevCases  = $cases;
+            $prevDeaths = $deaths;            
+        }
+    }
 }
 
 function getTimeFromFilename($fileName){
@@ -150,6 +187,8 @@ function checkUpdateDataFile(){
         $data = json_decode($json,True);
         // Reshape data as needed
         $data = reshapeData($data);
+        // Compute delta cases and delta deaths
+        computeDelta($data);
         // Transform reshaped data into JSON
         $json = json_encode($data);
         // Store into file

@@ -281,7 +281,7 @@ div.canvas2A {
   left: 1%;
   bottom:1%;
   height:48.5%;
-  width:43.5%; 
+  width:34.67%; 
   border: 0px solid #ADADBD;
   border-radius: 10px;
   box-shadow:3px 3px 10px black;
@@ -289,14 +289,26 @@ div.canvas2A {
 
 div.canvas2B {
   position: absolute;
-  left: 45.5%;
+  left: 36.67%;
   bottom:1%;
   height:48.5%;
-  width:43.5%; 
+  width:25.67%; 
   border: 0px solid #ADADBD;
   border-radius: 10px;
   box-shadow:3px 3px 10px black;
 }
+
+div.canvas2C {
+  position: absolute;
+  left: 63.33%;
+  bottom:1%;
+  height:48.5%;
+  width:25.67%; 
+  border: 0px solid #ADADBD;
+  border-radius: 10px;
+  box-shadow:3px 3px 10px black;
+}
+
 
 
 div.canvas9 {
