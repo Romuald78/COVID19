@@ -282,10 +282,9 @@ $DATA = json_encode($RAW);
         };
 
         
-        // Set config 1 to logarithmic Y
-        //config1.options.scales.yAxes[0].type='logarithmic';
         // Set config 2A to logarithmic Y
         //config2A.options.scales.yAxes[0].type='logarithmic';
+        //config2A.options.scales.yAxes[1].type='logarithmic';
 
         
         
@@ -326,18 +325,15 @@ $DATA = json_encode($RAW);
             switch(chartNumber){
                 case 0:
                 case 1:
-                    console.log("add chart 0");
                     config1.data.datasets.push(newDataset);
                     window.myLine1.update();
                     break;
                 case 2:
-                    console.log("add chart 3");
                     config3.data.datasets.push(newDataset);
                     window.myLine3.update();
                     break;
                 case 3:
                 case 4:
-                    console.log("add chart 3");
                     config2A.data.datasets.push(newDataset);
                     window.myLine2A.update();
                     break;
@@ -409,8 +405,10 @@ $DATA = json_encode($RAW);
         function clearAllCharts(){
             config1.data.datasets = [];
             config3.data.datasets = [];
+            config2A.data.datasets = [];
             window.myLine1.update();
             window.myLine3.update();
+            window.myLine2A.update();
         }
         
         // Clear all charts and generate charts for one country

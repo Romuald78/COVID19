@@ -100,29 +100,34 @@ function computeDelta(&$out){
     foreach($out as $country => $data){
         // Convert special characters for country variable
         $country = removeAccents($country);
-        
+
         // init previous data
         $prevTime   = -1;
-        $prevCases  = -1;
-        $prevDeaths = -1;
 
+        $tmpCases  = array();
+        $tmpDeaths = array();
+        $tmpTime   = array();
+        $i = 0;
+        
         // for each time
         foreach($data as $time=>$v){
             // get details
             $cases   = $v[CASES];
             $deaths  = $v[DEATHS];
-            
+
+            $tmpCases[]  = $cases;
+            $tmpDeaths[] = $deaths;
+            $tmpTime[]   = $time;
+                        
             // Process if not the first loop
-            if( $prevTime != -1 ){                
+            if( $i >= 7 ){                
                 // Update country/World deltas 
-                $out[$country][$prevTime][DELTA_CASES]  = $prevCases  - $cases;
-                $out[$country][$prevTime][DELTA_DEATHS] = $prevDeaths - $deaths;    
+                $prevTime = $tmpTime[$i-7];
+                $out[$country][$prevTime][DELTA_CASES]  = ($tmpCases[$i-7]  - $tmpCases[$i])/7;
+                $out[$country][$prevTime][DELTA_DEATHS] = ($tmpDeaths[$i-7] - $tmpDeaths[$i])/7;    
             }
             
-            // update previous values for next time
-            $prevTime   = $time;
-            $prevCases  = $cases;
-            $prevDeaths = $deaths;            
+            $i++;
         }
     }
 }
