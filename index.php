@@ -16,6 +16,10 @@ $_SESSION["incVisits"] = False;
 
 
 
+// CLEAN old files
+cleanFiles();
+
+
 // check if the most recent local file matches the current day
 // if yes, ths function does nothing
 // if no, this function gets data from the API and store a new local file

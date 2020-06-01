@@ -174,6 +174,30 @@ function getCurrentTime(){
     return $today;
 }
 
+function cleanFiles(){
+
+    // Init result
+    $curTime = getTimeFromFilename(getCurrentTime());
+    // Get data directory path
+    $dataDir = './' . DATA_DIRECTORY . '/';
+    // Get all directory files and check date
+    if ($handle = opendir($dataDir)) {
+        while (false !== ($entry = readdir($handle))) {
+            if ($entry != "." && $entry != "..") {
+                // Get time from filename
+                $time = getTimeFromFilename($entry);
+                // Compare file time to current time (2 hours maxi allowed)
+                $delta = intval($curTime) - intval($time);
+                if( $delta > 2 ){
+                    // Remove file
+                    unlink($dataDir."/".$entry);
+                }
+            }
+        }
+        closedir($handle);
+    }
+}
+
 function checkUpdateDataFile(){
     // Get filename
     $fileName = FILE_PREFIX . getCurrentTime() . FILE_SUFFIX;
